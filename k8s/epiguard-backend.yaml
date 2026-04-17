@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: epiguard-backend
+  labels:
+    app: epiguard-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: epiguard-backend
+  template:
+    metadata:
+      labels:
+        app: epiguard-backend
+    spec:
+      containers:
+      - name: backend
+        image: epiguard-backend:latest  # Note: Should be replaced by CI/CD with actual tag
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: epiguard-backend-service
+spec:
+  selector:
+    app: epiguard-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: ClusterIP

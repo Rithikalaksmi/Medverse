@@ -1,0 +1,21 @@
+# Values for kube-prometheus-stack Helm Chart
+# Usage: helm install prometheus prometheus-community/kube-prometheus-stack -f k8s/monitoring/kube-prometheus-stack-values.yaml
+
+grafana:
+  enabled: true
+  adminPassword: "admin" # Change this in production
+  service:
+    type: LoadBalancer
+  # SSO / LDAP Configuration
+  # This section partially addresses the SSO integration requirement.
+  # A full implementation requires actual LDAP/SAML server details.
+  grafana.ini:
+    auth.ldap:
+      enabled: false # Set to true and configure below for full LDAP
+      config_file: /etc/grafana/ldap.toml
+      allow_sign_up: true
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
